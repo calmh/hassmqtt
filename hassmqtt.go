@@ -55,7 +55,7 @@ type hassDevice struct {
 	SWVersion    string   `json:"sw_version,omitempty"`
 }
 
-func (m *Metric) topic() string {
+func (m *Metric) Topic() string {
 	return path.Join(m.Device.Namespace, m.Device.ClientID, m.Device.ID, m.ID)
 }
 
@@ -67,7 +67,7 @@ func (m *Metric) configPayload() *hassConfig {
 	return &hassConfig{
 		Name:              m.Name,
 		DeviceClass:       m.DeviceClass,
-		StateTopic:        m.topic(),
+		StateTopic:        m.Topic(),
 		UnitOfMeasurement: m.Unit,
 		UniqueID:          strings.Join([]string{m.Device.Namespace, m.Device.ClientID, m.Device.ID, m.ID}, "-"),
 		StateClass:        m.StateClass,
@@ -94,7 +94,7 @@ func (m *Metric) Publish(client mqtt.Client, value any) error {
 		m.published = time.Now()
 	}
 
-	return sendMQTT(client, m.topic(), value, false)
+	return sendMQTT(client, m.Topic(), value, false)
 }
 
 func sendMQTT(client mqtt.Client, topic string, payload any, retain bool) error {
