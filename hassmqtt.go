@@ -2,7 +2,6 @@ package hassmqtt
 
 import (
 	"encoding/json"
-	"fmt"
 	"path"
 	"strings"
 	"sync"
@@ -29,12 +28,14 @@ type Metric struct {
 	DeviceType  string
 	DeviceClass string
 	Unit        string
+	Name        string
 
 	mut       sync.Mutex
 	published time.Time
 }
 
 type hassConfig struct {
+	Name              string     `json:"name,omitempty"`
 	DeviceClass       string     `json:"device_class"`
 	StateTopic        string     `json:"state_topic"`
 	UnitOfMeasurement string     `json:"unit_of_measurement,omitempty"`
@@ -62,10 +63,12 @@ func (m *Metric) configTopic() string {
 
 func (m *Metric) configPayload() *hassConfig {
 	return &hassConfig{
+		Name:              m.Name,
 		DeviceClass:       m.DeviceClass,
 		StateTopic:        m.topic(),
 		UnitOfMeasurement: m.Unit,
 		UniqueID:          strings.Join([]string{m.Device.Namespace, m.Device.ClientID, m.Device.ID, m.ID}, "-"),
+
 		Device: hassDevice{
 			Identifiers:  []string{strings.Join([]string{m.Device.Namespace, m.Device.ClientID, m.Device.ID}, "-")},
 			Name:         m.Device.Name,
@@ -98,6 +101,5 @@ func sendMQTT(client mqtt.Client, topic string, payload any, retain bool) error 
 	}
 	token := client.Publish(topic, 0, retain, bs)
 	token.Wait()
-	fmt.Printf("%v: %s: %s\n", token.Error(), topic, bs)
 	return token.Error()
 }
