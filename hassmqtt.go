@@ -29,6 +29,7 @@ type Metric struct {
 	DeviceClass string
 	Unit        string
 	Name        string
+	StateClass  string
 
 	mut       sync.Mutex
 	published time.Time
@@ -42,6 +43,7 @@ type hassConfig struct {
 	ValueTemplate     string     `json:"value_template,omitempty"`
 	UniqueID          string     `json:"unique_id"`
 	Device            hassDevice `json:"device"`
+	StateClass        string     `json:"state_class,omitempty"`
 }
 
 type hassDevice struct {
@@ -68,6 +70,7 @@ func (m *Metric) configPayload() *hassConfig {
 		StateTopic:        m.topic(),
 		UnitOfMeasurement: m.Unit,
 		UniqueID:          strings.Join([]string{m.Device.Namespace, m.Device.ClientID, m.Device.ID, m.ID}, "-"),
+		StateClass:        m.StateClass,
 
 		Device: hassDevice{
 			Identifiers:  []string{strings.Join([]string{m.Device.Namespace, m.Device.ClientID, m.Device.ID}, "-")},
