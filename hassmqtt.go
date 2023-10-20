@@ -72,11 +72,11 @@ func (m *Metric) configPayload() *hassConfig {
 		DeviceClass:       m.DeviceClass,
 		StateTopic:        m.Topic(),
 		UnitOfMeasurement: m.Unit,
-		UniqueID:          strings.Join([]string{m.Device.Namespace, m.Device.ClientID, m.Device.ID, m.ID}, "-"),
+		UniqueID:          strings.Join([]string{m.Device.Namespace, m.Device.ID, m.ID}, "-"),
 		StateClass:        m.StateClass,
 
 		Device: hassDevice{
-			Identifiers:  []string{strings.Join([]string{m.Device.Namespace, m.Device.ClientID, m.Device.ID}, "-")},
+			Identifiers:  []string{strings.Join([]string{m.Device.Namespace, m.Device.ID}, "-")},
 			Name:         m.Device.Name,
 			Manufacturer: m.Device.Manufacturer,
 			Model:        m.Device.Model,
