@@ -1,7 +1,10 @@
 package hassmqtt
 
 import (
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
+	"os"
 	"path"
 	"strings"
 	"sync"
@@ -105,4 +108,17 @@ func sendMQTT(client mqtt.Client, topic string, payload any, retain bool) error 
 	token := client.Publish(topic, 0, retain, bs)
 	token.Wait()
 	return token.Error()
+}
+
+func ClientID(prefix string) string {
+	hn, _ := os.Hostname()
+	home, _ := os.UserHomeDir()
+	hf := sha256.New()
+	fmt.Fprintf(hf, "%s\n%s\n%s\n", prefix, hn, home)
+	hash := fmt.Sprintf("h%x", hf.Sum(nil))[:8]
+	if hn == "" {
+		hn = "unknown"
+	}
+	shortHost, _, _ := strings.Cut(hn, ".")
+	return fmt.Sprintf("%s-%s-%s", prefix, shortHost, hash)
 }
